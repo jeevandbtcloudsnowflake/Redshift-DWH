@@ -1,0 +1,140 @@
+name: ETL Pipeline
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run ETL'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - staging
+        - prod
+      job_type:
+        description: 'ETL Job Type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - data-processing
+        - data-quality
+
+env:
+  AWS_REGION: ap-south-1
+
+jobs:
+  run-etl:
+    name: Run ETL Pipeline
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Upload ETL Scripts to S3
+      run: |
+        ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
+        SCRIPTS_BUCKET=$(aws s3 ls | grep "ecommerce-dwh-${ENVIRONMENT}-scripts" | awk '{print $3}')
+        
+        echo "Uploading scripts to bucket: $SCRIPTS_BUCKET"
+        aws s3 cp etl/glue_jobs/ s3://$SCRIPTS_BUCKET/glue_jobs/ --recursive --region ${{ env.AWS_REGION }}
+    
+    - name: Run Glue Crawler
+      if: github.event.inputs.job_type == 'full' || github.event.inputs.job_type == ''
+      run: |
+        ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
+        CRAWLER_NAME="ecommerce-dwh-${ENVIRONMENT}-raw-data-crawler"
+        
+        echo "Starting crawler: $CRAWLER_NAME"
+        aws glue start-crawler --name $CRAWLER_NAME --region ${{ env.AWS_REGION }}
+        
+        # Wait for crawler to complete
+        while true; do
+          STATUS=$(aws glue get-crawler --name $CRAWLER_NAME --region ${{ env.AWS_REGION }} --query 'Crawler.State' --output text)
+          echo "Crawler status: $STATUS"
+          
+          if [ "$STATUS" = "READY" ]; then
+            echo "Crawler completed successfully"
+            break
+          elif [ "$STATUS" = "STOPPING" ] || [ "$STATUS" = "FAILED" ]; then
+            echo "Crawler failed or was stopped"
+            exit 1
+          fi
+          
+          sleep 30
+        done
+    
+    - name: Run Data Processing Job
+      if: github.event.inputs.job_type == 'full' || github.event.inputs.job_type == 'data-processing' || github.event.inputs.job_type == ''
+      run: |
+        ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
+        JOB_NAME="ecommerce-dwh-${ENVIRONMENT}-data-processing"
+        
+        echo "Starting job: $JOB_NAME"
+        JOB_RUN_ID=$(aws glue start-job-run --job-name $JOB_NAME --region ${{ env.AWS_REGION }} --query 'JobRunId' --output text)
+        echo "Job run ID: $JOB_RUN_ID"
+        
+        # Wait for job to complete
+        while true; do
+          STATUS=$(aws glue get-job-run --job-name $JOB_NAME --run-id $JOB_RUN_ID --region ${{ env.AWS_REGION }} --query 'JobRun.JobRunState' --output text)
+          echo "Job status: $STATUS"
+          
+          if [ "$STATUS" = "SUCCEEDED" ]; then
+            echo "Data processing job completed successfully"
+            break
+          elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "STOPPED" ] || [ "$STATUS" = "TIMEOUT" ]; then
+            echo "Data processing job failed"
+            exit 1
+          fi
+          
+          sleep 60
+        done
+    
+    - name: Run Data Quality Job
+      if: github.event.inputs.job_type == 'full' || github.event.inputs.job_type == 'data-quality' || github.event.inputs.job_type == ''
+      run: |
+        ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
+        JOB_NAME="ecommerce-dwh-${ENVIRONMENT}-data-quality"
+        
+        echo "Starting job: $JOB_NAME"
+        JOB_RUN_ID=$(aws glue start-job-run --job-name $JOB_NAME --region ${{ env.AWS_REGION }} --query 'JobRunId' --output text)
+        echo "Job run ID: $JOB_RUN_ID"
+        
+        # Wait for job to complete
+        while true; do
+          STATUS=$(aws glue get-job-run --job-name $JOB_NAME --run-id $JOB_RUN_ID --region ${{ env.AWS_REGION }} --query 'JobRun.JobRunState' --output text)
+          echo "Job status: $STATUS"
+          
+          if [ "$STATUS" = "SUCCEEDED" ]; then
+            echo "Data quality job completed successfully"
+            break
+          elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "STOPPED" ] || [ "$STATUS" = "TIMEOUT" ]; then
+            echo "Data quality job failed"
+            exit 1
+          fi
+          
+          sleep 60
+        done
+    
+    - name: Send Notification
+      if: always()
+      run: |
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "ETL Pipeline completed successfully"
+        else
+          echo "ETL Pipeline failed"
+        fi
