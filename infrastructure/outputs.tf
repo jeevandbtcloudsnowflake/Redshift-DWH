@@ -86,3 +86,35 @@ output "glue_security_group_id" {
   description = "ID of the Glue security group"
   value       = module.security.glue_security_group_id
 }
+
+# Glue Workflow Outputs
+output "glue_etl_workflow_name" {
+  description = "Name of the Glue ETL workflow"
+  value       = module.glue.etl_workflow_name
+}
+
+output "glue_etl_workflow_arn" {
+  description = "ARN of the Glue ETL workflow"
+  value       = module.glue.etl_workflow_arn
+}
+
+output "glue_etl_schedule_rule_name" {
+  description = "Name of the CloudWatch event rule for ETL scheduling"
+  value       = module.glue.etl_schedule_rule_name
+}
+
+# Step Functions Outputs
+output "step_functions_state_machine_arn" {
+  description = "ARN of the Step Functions state machine"
+  value       = module.step_functions.state_machine_arn
+}
+
+output "step_functions_state_machine_name" {
+  description = "Name of the Step Functions state machine"
+  value       = module.step_functions.state_machine_name
+}
+
+output "step_functions_schedule_rule_name" {
+  description = "Name of the CloudWatch event rule for Step Functions scheduling"
+  value       = module.step_functions.schedule_rule_name
+}

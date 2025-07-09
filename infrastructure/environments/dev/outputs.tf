@@ -30,3 +30,19 @@ output "glue_catalog_database_name" {
   description = "Name of the Glue catalog database"
   value       = module.ecommerce_dwh.glue_catalog_database_name
 }
+
+# Glue Workflow Outputs
+output "glue_etl_workflow_name" {
+  description = "Name of the Glue ETL workflow"
+  value       = module.ecommerce_dwh.glue_etl_workflow_name
+}
+
+output "glue_etl_workflow_arn" {
+  description = "ARN of the Glue ETL workflow"
+  value       = module.ecommerce_dwh.glue_etl_workflow_arn
+}
+
+output "glue_etl_schedule_rule_name" {
+  description = "Name of the CloudWatch event rule for ETL scheduling"
+  value       = module.ecommerce_dwh.glue_etl_schedule_rule_name
+}

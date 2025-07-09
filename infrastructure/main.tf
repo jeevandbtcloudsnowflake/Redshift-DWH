@@ -132,3 +132,21 @@ module "monitoring" {
   
   tags = local.common_tags
 }
+
+# Step Functions Module
+module "step_functions" {
+  source = "./modules/step_functions"
+
+  project_name               = var.project_name
+  environment               = var.environment
+  raw_data_crawler_name     = module.glue.raw_data_crawler_name
+  data_processing_job_name  = module.glue.data_processing_job_name
+  data_quality_job_name     = module.glue.data_quality_job_name
+  raw_data_bucket          = module.s3.raw_data_bucket_name
+  processed_data_bucket    = module.s3.processed_data_bucket_name
+  database_name            = var.glue_database_name
+  sns_topic_arn           = module.monitoring.sns_topic_arn
+  schedule_expression     = var.step_functions_schedule
+
+  tags = local.common_tags
+}

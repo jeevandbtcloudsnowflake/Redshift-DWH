@@ -91,6 +91,13 @@ variable "glue_database_name" {
   default     = "ecommerce_catalog"
 }
 
+# Step Functions Configuration
+variable "step_functions_schedule" {
+  description = "CloudWatch Events schedule expression for Step Functions"
+  type        = string
+  default     = "cron(0 3 * * ? *)"  # Daily at 3 AM UTC (different from Glue Workflows)
+}
+
 # Tags
 variable "common_tags" {
   description = "Common tags for all resources"

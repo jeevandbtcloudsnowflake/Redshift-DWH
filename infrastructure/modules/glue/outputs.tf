@@ -25,6 +25,21 @@ output "processed_data_crawler_name" {
   value       = aws_glue_crawler.processed_data.name
 }
 
+output "etl_workflow_name" {
+  description = "Name of the ETL workflow"
+  value       = aws_glue_workflow.etl_workflow.name
+}
+
+output "etl_workflow_arn" {
+  description = "ARN of the ETL workflow"
+  value       = aws_glue_workflow.etl_workflow.arn
+}
+
+output "etl_schedule_rule_name" {
+  description = "Name of the CloudWatch event rule for ETL scheduling"
+  value       = aws_cloudwatch_event_rule.etl_schedule.name
+}
+
 output "data_processing_job_name" {
   description = "Name of the data processing Glue job"
   value       = aws_glue_job.data_processing.name

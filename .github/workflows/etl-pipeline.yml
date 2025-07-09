@@ -2,8 +2,10 @@ name: ETL Pipeline
 
 on:
   schedule:
-    # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    # Run daily at 2 AM UTC (Monday to Friday)
+    - cron: '0 2 * * 1-5'
+    # Run weekly full pipeline on Sunday at 3 AM UTC
+    - cron: '0 3 * * 0'
   workflow_dispatch:
     inputs:
       environment:
@@ -24,6 +26,16 @@ on:
         - full
         - data-processing
         - data-quality
+        - crawler-only
+      skip_crawler:
+        description: 'Skip crawler step'
+        required: false
+        default: false
+        type: boolean
+      notification_email:
+        description: 'Email for notifications'
+        required: false
+        type: string
 
 env:
   AWS_REGION: ap-south-1

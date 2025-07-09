@@ -77,6 +77,131 @@ resource "aws_glue_crawler" "processed_data" {
   })
 }
 
+# Glue Workflow for ETL Orchestration
+resource "aws_glue_workflow" "etl_workflow" {
+  name        = "${var.project_name}-${var.environment}-etl-workflow"
+  description = "Automated ETL workflow for e-commerce data processing"
+
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-etl-workflow"
+  })
+}
+
+# Workflow Triggers
+resource "aws_glue_trigger" "start_crawler" {
+  name         = "${var.project_name}-${var.environment}-start-crawler-trigger"
+  type         = "ON_DEMAND"
+  workflow_name = aws_glue_workflow.etl_workflow.name
+
+  actions {
+    crawler_name = aws_glue_crawler.raw_data.name
+  }
+
+  tags = var.tags
+}
+
+resource "aws_glue_trigger" "start_processing" {
+  name         = "${var.project_name}-${var.environment}-start-processing-trigger"
+  type         = "CONDITIONAL"
+  workflow_name = aws_glue_workflow.etl_workflow.name
+
+  predicate {
+    conditions {
+      logical_operator = "EQUALS"
+      crawler_name     = aws_glue_crawler.raw_data.name
+      crawl_state      = "SUCCEEDED"
+    }
+  }
+
+  actions {
+    job_name = aws_glue_job.data_processing.name
+  }
+
+  tags = var.tags
+}
+
+resource "aws_glue_trigger" "start_quality" {
+  name         = "${var.project_name}-${var.environment}-start-quality-trigger"
+  type         = "CONDITIONAL"
+  workflow_name = aws_glue_workflow.etl_workflow.name
+
+  predicate {
+    conditions {
+      logical_operator = "EQUALS"
+      job_name         = aws_glue_job.data_processing.name
+      state            = "SUCCEEDED"
+    }
+  }
+
+  actions {
+    job_name = aws_glue_job.data_quality.name
+  }
+
+  tags = var.tags
+}
+
+# CloudWatch Event Rule for Scheduling
+resource "aws_cloudwatch_event_rule" "etl_schedule" {
+  name                = "${var.project_name}-${var.environment}-etl-schedule"
+  description         = "Trigger ETL workflow daily"
+  schedule_expression = "cron(0 2 * * ? *)"  # Daily at 2 AM UTC
+
+  tags = var.tags
+}
+
+# CloudWatch Event Target
+resource "aws_cloudwatch_event_target" "etl_workflow_target" {
+  rule      = aws_cloudwatch_event_rule.etl_schedule.name
+  target_id = "GlueWorkflowTarget"
+  arn       = "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:workflow/${aws_glue_workflow.etl_workflow.name}"
+  role_arn  = aws_iam_role.workflow_execution_role.arn
+}
+
+# IAM Role for Workflow Execution
+resource "aws_iam_role" "workflow_execution_role" {
+  name = "${var.project_name}-${var.environment}-workflow-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "events.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+# IAM Policy for Workflow Execution
+resource "aws_iam_role_policy" "workflow_execution_policy" {
+  name = "${var.project_name}-${var.environment}-workflow-execution-policy"
+  role = aws_iam_role.workflow_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "glue:StartWorkflowRun",
+          "glue:GetWorkflowRun",
+          "glue:GetWorkflowRunProperties"
+        ]
+        Resource = aws_glue_workflow.etl_workflow.arn
+      }
+    ]
+  })
+}
+
+# Data sources for current AWS account and region
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 # Glue Job for Data Processing
 resource "aws_glue_job" "data_processing" {
   name         = "${var.project_name}-${var.environment}-data-processing"
