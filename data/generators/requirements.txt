@@ -1,0 +1,4 @@
+# Data Generation Requirements
+faker==20.1.0
+pandas==2.1.4
+numpy==1.24.3

@@ -1,0 +1,3 @@
+@echo off
+echo Getting Terraform outputs...
+terraform output

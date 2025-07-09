@@ -1,0 +1,100 @@
+# Data Generation Configuration
+
+# Data volumes for different environments
+environments:
+  dev:
+    customers: 1000
+    products: 500
+    orders: 5000
+    order_items: 15000
+    web_events: 50000
+  
+  staging:
+    customers: 10000
+    products: 5000
+    orders: 50000
+    order_items: 150000
+    web_events: 500000
+  
+  prod:
+    customers: 100000
+    products: 50000
+    orders: 500000
+    order_items: 1500000
+    web_events: 5000000
+
+# Date ranges
+date_ranges:
+  start_date: "2022-01-01"
+  end_date: "2024-12-31"
+
+# Output configuration
+output:
+  formats: ["csv", "json", "parquet"]
+  compression: "gzip"
+  chunk_size: 10000
+
+# Data quality settings
+data_quality:
+  null_percentage: 0.05
+  duplicate_percentage: 0.01
+  outlier_percentage: 0.02
+
+# Business rules
+business_rules:
+  customer_segments:
+    Premium: 0.1
+    Standard: 0.6
+    Basic: 0.3
+  
+  order_statuses:
+    Pending: 0.05
+    Processing: 0.1
+    Shipped: 0.15
+    Delivered: 0.6
+    Cancelled: 0.08
+    Returned: 0.02
+  
+  payment_methods:
+    "Credit Card": 0.4
+    "Debit Card": 0.25
+    "PayPal": 0.2
+    "Apple Pay": 0.08
+    "Google Pay": 0.05
+    "Bank Transfer": 0.02
+
+# Product categories
+categories:
+  Electronics:
+    - Smartphones
+    - Laptops
+    - Tablets
+    - Headphones
+    - Cameras
+  
+  Clothing:
+    - "Men's Clothing"
+    - "Women's Clothing"
+    - "Kids' Clothing"
+    - Shoes
+    - Accessories
+  
+  "Home & Garden":
+    - Furniture
+    - Kitchen
+    - Bathroom
+    - Garden
+    - Decor
+  
+  "Sports & Outdoors":
+    - Fitness
+    - "Outdoor Recreation"
+    - "Sports Equipment"
+    - "Athletic Wear"
+  
+  "Books & Media":
+    - Books
+    - Movies
+    - Music
+    - Games
+    - Software

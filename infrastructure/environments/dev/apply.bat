@@ -1,0 +1,3 @@
+@echo off
+echo Running Terraform Apply...
+terraform apply -auto-approve
