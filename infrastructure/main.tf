@@ -150,3 +150,27 @@ module "step_functions" {
 
   tags = local.common_tags
 }
+
+# QuickSight Module (Optional)
+module "quicksight" {
+  count  = var.enable_quicksight ? 1 : 0
+  source = "./modules/quicksight"
+
+  project_name           = var.project_name
+  environment           = var.environment
+  quicksight_admin_email = var.quicksight_admin_email
+
+  # Redshift connection details
+  redshift_endpoint  = module.redshift.cluster_endpoint
+  redshift_port      = module.redshift.cluster_port
+  redshift_database  = module.redshift.database_name
+  redshift_username  = var.redshift_master_username
+  redshift_password  = var.redshift_master_password
+
+  # Network configuration
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnet_ids
+  security_group_ids = [module.security.redshift_security_group_id]
+
+  tags = local.common_tags
+}

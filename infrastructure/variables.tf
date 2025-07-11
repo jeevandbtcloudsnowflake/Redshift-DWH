@@ -98,6 +98,19 @@ variable "step_functions_schedule" {
   default     = "cron(0 3 * * ? *)"  # Daily at 3 AM UTC (different from Glue Workflows)
 }
 
+# QuickSight Configuration
+variable "enable_quicksight" {
+  description = "Enable QuickSight dashboards deployment"
+  type        = bool
+  default     = false
+}
+
+variable "quicksight_admin_email" {
+  description = "Email address for QuickSight admin user"
+  type        = string
+  default     = "admin@example.com"
+}
+
 # Tags
 variable "common_tags" {
   description = "Common tags for all resources"

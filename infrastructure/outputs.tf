@@ -118,3 +118,19 @@ output "step_functions_schedule_rule_name" {
   description = "Name of the CloudWatch event rule for Step Functions scheduling"
   value       = module.step_functions.schedule_rule_name
 }
+
+# QuickSight Outputs (conditional)
+output "quicksight_console_url" {
+  description = "URL to access QuickSight console"
+  value       = var.enable_quicksight ? module.quicksight[0].quicksight_console_url : null
+}
+
+output "quicksight_data_source_arn" {
+  description = "ARN of the QuickSight Redshift data source"
+  value       = var.enable_quicksight ? module.quicksight[0].quicksight_data_source_arn : null
+}
+
+output "quicksight_dashboard_urls" {
+  description = "URLs for accessing the QuickSight dashboards"
+  value       = var.enable_quicksight ? module.quicksight[0].dashboard_urls : null
+}
