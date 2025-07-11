@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Data Warehouse - ACTUAL Implementation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .architecture-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .title {
+            text-align: center;
+            color: #232F3E;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #FF9900;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .layer {
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .layer-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .service-box {
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        
+        .service-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .service-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .implemented {
+            background-color: #FF9900;
+            border-color: #FF9900;
+        }
+        
+        .analytics {
+            background-color: #3F48CC;
+            border-color: #3F48CC;
+        }
+        
+        .monitoring {
+            background-color: #7AA116;
+            border-color: #7AA116;
+        }
+        
+        .network {
+            background-color: #8C4FFF;
+            border-color: #8C4FFF;
+        }
+        
+        .data-sources {
+            border-color: #666;
+        }
+        
+        .data-sources .layer-title {
+            color: #666;
+        }
+        
+        .core-layer {
+            border-color: #FF9900;
+        }
+        
+        .core-layer .layer-title {
+            color: #FF9900;
+        }
+        
+        .analytics-layer {
+            border-color: #3F48CC;
+        }
+        
+        .analytics-layer .layer-title {
+            color: #3F48CC;
+        }
+        
+        .support-layer {
+            border-color: #7AA116;
+        }
+        
+        .support-layer .layer-title {
+            color: #7AA116;
+        }
+        
+        .data-flow {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #FF9900, #3F48CC);
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 20px;
+        }
+        
+        .implementation-note {
+            background: #e8f4fd;
+            border: 2px solid #3F48CC;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .implementation-note h3 {
+            color: #3F48CC;
+            margin-top: 0;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF9900;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        @media print {
+            body { background: white; }
+            .architecture-container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="architecture-container">
+        <div class="title">
+            🏆 E-commerce Data Warehouse - ACTUAL Implementation
+        </div>
+        <div class="subtitle">
+            What We Really Built (Not Theoretical Services)
+        </div>
+        
+        <!-- Implementation Stats -->
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">9</div>
+                <div class="stat-label">AWS Services<br/>Actually Implemented</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4</div>
+                <div class="stat-label">S3 Buckets<br/>Configured</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">1</div>
+                <div class="stat-label">Redshift Cluster<br/>Deployed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Infrastructure<br/>as Code</div>
+            </div>
+        </div>
+        
+        <!-- Data Sources Layer -->
+        <div class="layer data-sources">
+            <div class="layer-title">📊 Data Sources</div>
+            <div class="services-grid">
+                <div class="service-box" style="background-color: #f8f9fa; color: #333; border-color: #ddd;">
+                    <div class="service-icon">📄</div>
+                    <div>CSV Files<br/>Sample E-commerce Data</div>
+                </div>
+                <div class="service-box" style="background-color: #f8f9fa; color: #333; border-color: #ddd;">
+                    <div class="service-icon">🔮</div>
+                    <div>Future APIs<br/>(Not Yet Implemented)</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Core Infrastructure Layer -->
+        <div class="layer core-layer">
+            <div class="layer-title">🏗️ Core Infrastructure (Actually Implemented)</div>
+            <div class="services-grid">
+                <div class="service-box implemented">
+                    <div class="service-icon">🪣</div>
+                    <div>Amazon S3<br/>4 Buckets</div>
+                </div>
+                <div class="service-box implemented">
+                    <div class="service-icon">⚙️</div>
+                    <div>AWS Glue<br/>ETL + Crawler</div>
+                </div>
+                <div class="service-box implemented">
+                    <div class="service-icon">🚀</div>
+                    <div>AWS Step Functions<br/>Orchestration</div>
+                </div>
+                <div class="service-box network">
+                    <div class="service-icon">🌐</div>
+                    <div>Amazon VPC<br/>Private Network</div>
+                </div>
+                <div class="service-box network">
+                    <div class="service-icon">🔒</div>
+                    <div>Security Groups<br/>Firewall Rules</div>
+                </div>
+                <div class="service-box implemented">
+                    <div class="service-icon">🔐</div>
+                    <div>AWS IAM<br/>Roles & Policies</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Warehouse Layer -->
+        <div class="layer analytics-layer">
+            <div class="layer-title">🏢 Data Warehouse & Analytics</div>
+            <div class="services-grid">
+                <div class="service-box analytics">
+                    <div class="service-icon">🏢</div>
+                    <div>Amazon Redshift<br/>ra3.xlplus Cluster</div>
+                </div>
+                <div class="service-box analytics">
+                    <div class="service-icon">📊</div>
+                    <div>Star Schema<br/>Dimensional Model</div>
+                </div>
+                <div class="service-box analytics">
+                    <div class="service-icon">📈</div>
+                    <div>SQL Analytics<br/>Business Intelligence</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Supporting Services Layer -->
+        <div class="layer support-layer">
+            <div class="layer-title">📊 Supporting Services</div>
+            <div class="services-grid">
+                <div class="service-box monitoring">
+                    <div class="service-icon">📊</div>
+                    <div>Amazon CloudWatch<br/>Basic Monitoring</div>
+                </div>
+                <div class="service-box monitoring">
+                    <div class="service-icon">📢</div>
+                    <div>Amazon SNS<br/>Notifications</div>
+                </div>
+                <div class="service-box implemented">
+                    <div class="service-icon">🏗️</div>
+                    <div>Terraform<br/>Infrastructure as Code</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Flow -->
+        <div class="data-flow">
+            📄 CSV Data 
+            <span class="arrow">→</span>
+            🪣 S3 Raw Bucket 
+            <span class="arrow">→</span>
+            ⚙️ Glue ETL 
+            <span class="arrow">→</span>
+            🏢 Redshift 
+            <span class="arrow">→</span>
+            📊 SQL Analytics
+        </div>
+        
+        <!-- Implementation Reality Check -->
+        <div class="implementation-note">
+            <h3>🎯 Implementation Reality Check</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="color: #28a745;">✅ What We Actually Built:</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>Amazon VPC</strong> - Private network with subnets</li>
+                        <li><strong>Amazon S3</strong> - 4 buckets for data storage</li>
+                        <li><strong>Amazon Redshift</strong> - Data warehouse cluster</li>
+                        <li><strong>AWS Glue</strong> - ETL jobs and data catalog</li>
+                        <li><strong>AWS Step Functions</strong> - Workflow orchestration</li>
+                        <li><strong>AWS IAM</strong> - Security roles and policies</li>
+                        <li><strong>CloudWatch</strong> - Basic monitoring</li>
+                        <li><strong>SNS</strong> - Notification system</li>
+                        <li><strong>Terraform</strong> - Complete Infrastructure as Code</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #dc3545;">❌ What We Didn't Implement:</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>AWS Config</strong> - Compliance monitoring</li>
+                        <li><strong>AWS CloudTrail</strong> - Audit logging</li>
+                        <li><strong>AWS GuardDuty</strong> - Threat detection</li>
+                        <li><strong>AWS Security Hub</strong> - Security center</li>
+                        <li><strong>AWS Secrets Manager</strong> - Credential management</li>
+                        <li><strong>AWS KMS</strong> - Key management</li>
+                        <li><strong>AWS Backup</strong> - Automated backups</li>
+                        <li><strong>Cross-Region Replication</strong> - Disaster recovery</li>
+                        <li><strong>Lambda Functions</strong> - Serverless compute</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- What We Delivered -->
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3 style="color: #232F3E; margin-bottom: 15px;">🏆 What We Successfully Delivered</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <div>
+                    <strong>📊 Complete Data Pipeline:</strong><br/>
+                    • CSV data ingestion to S3<br/>
+                    • Glue ETL processing<br/>
+                    • Redshift data warehouse<br/>
+                    • SQL analytics and reporting
+                </div>
+                <div>
+                    <strong>🏗️ Infrastructure as Code:</strong><br/>
+                    • 100% Terraform automation<br/>
+                    • Modular, reusable components<br/>
+                    • Multi-environment ready<br/>
+                    • Version-controlled infrastructure
+                </div>
+                <div>
+                    <strong>🔄 Automated Orchestration:</strong><br/>
+                    • Step Functions workflows<br/>
+                    • Scheduled ETL execution<br/>
+                    • Error handling and notifications<br/>
+                    • Monitoring and alerting
+                </div>
+                <div>
+                    <strong>📈 Business Value:</strong><br/>
+                    • Star schema dimensional model<br/>
+                    • Sample e-commerce data (5K+ orders)<br/>
+                    • Advanced analytics queries<br/>
+                    • Production-ready architecture
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technical Specifications -->
+        <div style="margin-top: 20px; padding: 20px; background: #e8f4fd; border-radius: 10px;">
+            <h3 style="color: #3F48CC; margin-bottom: 15px;">🔧 Technical Specifications</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div>
+                    <strong>Redshift Cluster:</strong><br/>
+                    • Node Type: ra3.xlplus<br/>
+                    • Nodes: 1 (scalable to multi-node)<br/>
+                    • Database: ecommerce_dwh<br/>
+                    • Region: ap-south-1
+                </div>
+                <div>
+                    <strong>S3 Storage:</strong><br/>
+                    • Raw data bucket<br/>
+                    • Processed data bucket<br/>
+                    • Scripts bucket<br/>
+                    • Logs bucket
+                </div>
+                <div>
+                    <strong>ETL Processing:</strong><br/>
+                    • Glue Crawler for schema discovery<br/>
+                    • Glue ETL jobs for transformation<br/>
+                    • Data quality validation<br/>
+                    • Automated scheduling
+                </div>
+                <div>
+                    <strong>Data Model:</strong><br/>
+                    • Star schema design<br/>
+                    • Fact table: orders<br/>
+                    • Dimensions: customers, products, dates<br/>
+                    • 1K customers, 500 products, 5K+ orders
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Print functionality
+        function printDiagram() {
+            window.print();
+        }
+        
+        // Add print button
+        document.addEventListener('DOMContentLoaded', function() {
+            const printBtn = document.createElement('button');
+            printBtn.textContent = '🖨️ Print/Save as PDF';
+            printBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background: #FF9900;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                z-index: 1000;
+            `;
+            printBtn.onclick = printDiagram;
+            document.body.appendChild(printBtn);
+        });
+    </script>
+</body>
+</html>

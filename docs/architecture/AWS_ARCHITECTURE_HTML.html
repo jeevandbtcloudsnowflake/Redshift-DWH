@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Data Warehouse - AWS Architecture</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .architecture-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .title {
+            text-align: center;
+            color: #232F3E;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #FF9900;
+            padding-bottom: 15px;
+        }
+        
+        .layer {
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .layer-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .service-box {
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        
+        .service-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .service-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        /* AWS Service Colors */
+        .storage { background-color: #FF9900; border-color: #FF9900; }
+        .compute { background-color: #FF9900; border-color: #FF9900; }
+        .analytics { background-color: #3F48CC; border-color: #3F48CC; }
+        .security { background-color: #DD344C; border-color: #DD344C; }
+        .monitoring { background-color: #7AA116; border-color: #7AA116; }
+        .devops { background-color: #232F3E; border-color: #232F3E; }
+        .backup { background-color: #4B92DB; border-color: #4B92DB; }
+        .network { background-color: #8C4FFF; border-color: #8C4FFF; }
+        
+        .data-sources { border-color: #666; }
+        .data-sources .layer-title { color: #666; }
+        
+        .storage-layer { border-color: #FF9900; }
+        .storage-layer .layer-title { color: #FF9900; }
+        
+        .processing-layer { border-color: #FF9900; }
+        .processing-layer .layer-title { color: #FF9900; }
+        
+        .analytics-layer { border-color: #3F48CC; }
+        .analytics-layer .layer-title { color: #3F48CC; }
+        
+        .security-layer { border-color: #DD344C; }
+        .security-layer .layer-title { color: #DD344C; }
+        
+        .monitoring-layer { border-color: #7AA116; }
+        .monitoring-layer .layer-title { color: #7AA116; }
+        
+        .backup-layer { border-color: #4B92DB; }
+        .backup-layer .layer-title { color: #4B92DB; }
+        
+        .devops-layer { border-color: #232F3E; }
+        .devops-layer .layer-title { color: #232F3E; }
+        
+        .data-flow {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #FF9900, #3F48CC);
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 20px;
+        }
+        
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #232F3E;
+        }
+        
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        @media print {
+            body { background: white; }
+            .architecture-container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="architecture-container">
+        <div class="title">
+            🏆 E-commerce Data Warehouse - AWS Architecture
+        </div>
+        
+        <!-- Data Sources Layer -->
+        <div class="layer data-sources">
+            <div class="layer-title">📊 Data Sources</div>
+            <div class="services-grid">
+                <div class="service-box" style="background-color: #f8f9fa; color: #333; border-color: #ddd;">
+                    <div class="service-icon">📄</div>
+                    <div>CSV Files<br/>Sample Data</div>
+                </div>
+                <div class="service-box" style="background-color: #f8f9fa; color: #333; border-color: #ddd;">
+                    <div class="service-icon">🌐</div>
+                    <div>APIs<br/>Real-time Data</div>
+                </div>
+                <div class="service-box" style="background-color: #f8f9fa; color: #333; border-color: #ddd;">
+                    <div class="service-icon">🗄️</div>
+                    <div>Databases<br/>Transactional Systems</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Ingestion & Storage Layer -->
+        <div class="layer storage-layer">
+            <div class="layer-title">🪣 Data Ingestion & Storage</div>
+            <div class="services-grid">
+                <div class="service-box storage">
+                    <div class="service-icon">🪣</div>
+                    <div>Amazon S3<br/>Raw Data Bucket</div>
+                </div>
+                <div class="service-box storage">
+                    <div class="service-icon">🪣</div>
+                    <div>Amazon S3<br/>Processed Data</div>
+                </div>
+                <div class="service-box storage">
+                    <div class="service-icon">🪣</div>
+                    <div>Amazon S3<br/>Scripts Bucket</div>
+                </div>
+                <div class="service-box storage">
+                    <div class="service-icon">🪣</div>
+                    <div>Amazon S3<br/>Logs Bucket</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ETL Processing Layer -->
+        <div class="layer processing-layer">
+            <div class="layer-title">⚙️ ETL & Data Processing</div>
+            <div class="services-grid">
+                <div class="service-box compute">
+                    <div class="service-icon">🕷️</div>
+                    <div>AWS Glue<br/>Crawler</div>
+                </div>
+                <div class="service-box compute">
+                    <div class="service-icon">⚙️</div>
+                    <div>AWS Glue<br/>ETL Jobs</div>
+                </div>
+                <div class="service-box compute">
+                    <div class="service-icon">📚</div>
+                    <div>AWS Glue<br/>Data Catalog</div>
+                </div>
+                <div class="service-box compute">
+                    <div class="service-icon">🔄</div>
+                    <div>AWS Glue<br/>Workflows</div>
+                </div>
+                <div class="service-box compute">
+                    <div class="service-icon">🚀</div>
+                    <div>AWS Step<br/>Functions</div>
+                </div>
+                <div class="service-box compute">
+                    <div class="service-icon">⏰</div>
+                    <div>Amazon<br/>EventBridge</div>
+                </div>
+                <div class="service-box compute">
+                    <div class="service-icon">⚡</div>
+                    <div>AWS<br/>Lambda</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Warehouse Layer -->
+        <div class="layer analytics-layer">
+            <div class="layer-title">🏢 Data Warehouse & Analytics</div>
+            <div class="services-grid">
+                <div class="service-box analytics">
+                    <div class="service-icon">🏢</div>
+                    <div>Amazon Redshift<br/>ra3.xlplus Cluster</div>
+                </div>
+                <div class="service-box analytics">
+                    <div class="service-icon">🔍</div>
+                    <div>Redshift<br/>Spectrum</div>
+                </div>
+                <div class="service-box analytics">
+                    <div class="service-icon">📊</div>
+                    <div>Amazon<br/>QuickSight</div>
+                </div>
+                <div class="service-box analytics">
+                    <div class="service-icon">📈</div>
+                    <div>Tableau<br/>Analytics</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security & Compliance Layer -->
+        <div class="layer security-layer">
+            <div class="layer-title">🔒 Security & Compliance</div>
+            <div class="services-grid">
+                <div class="service-box security">
+                    <div class="service-icon">🔐</div>
+                    <div>AWS IAM<br/>Roles & Policies</div>
+                </div>
+                <div class="service-box security">
+                    <div class="service-icon">🔑</div>
+                    <div>AWS KMS<br/>Encryption</div>
+                </div>
+                <div class="service-box security">
+                    <div class="service-icon">🔒</div>
+                    <div>AWS Secrets<br/>Manager</div>
+                </div>
+                <div class="service-box security">
+                    <div class="service-icon">📋</div>
+                    <div>AWS Config<br/>Compliance</div>
+                </div>
+                <div class="service-box security">
+                    <div class="service-icon">🔍</div>
+                    <div>AWS<br/>CloudTrail</div>
+                </div>
+                <div class="service-box security">
+                    <div class="service-icon">🛡️</div>
+                    <div>AWS<br/>GuardDuty</div>
+                </div>
+                <div class="service-box security">
+                    <div class="service-icon">🏛️</div>
+                    <div>AWS Security<br/>Hub</div>
+                </div>
+                <div class="service-box network">
+                    <div class="service-icon">🌐</div>
+                    <div>Amazon VPC<br/>Network</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monitoring Layer -->
+        <div class="layer monitoring-layer">
+            <div class="layer-title">📊 Monitoring & Observability</div>
+            <div class="services-grid">
+                <div class="service-box monitoring">
+                    <div class="service-icon">📊</div>
+                    <div>Amazon<br/>CloudWatch</div>
+                </div>
+                <div class="service-box monitoring">
+                    <div class="service-icon">📝</div>
+                    <div>CloudWatch<br/>Logs</div>
+                </div>
+                <div class="service-box monitoring">
+                    <div class="service-icon">🚨</div>
+                    <div>CloudWatch<br/>Alarms</div>
+                </div>
+                <div class="service-box monitoring">
+                    <div class="service-icon">📢</div>
+                    <div>Amazon<br/>SNS</div>
+                </div>
+                <div class="service-box monitoring">
+                    <div class="service-icon">📊</div>
+                    <div>DevOps<br/>Dashboard</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Backup & DR Layer -->
+        <div class="layer backup-layer">
+            <div class="layer-title">💾 Backup & Disaster Recovery</div>
+            <div class="services-grid">
+                <div class="service-box backup">
+                    <div class="service-icon">💾</div>
+                    <div>AWS<br/>Backup</div>
+                </div>
+                <div class="service-box backup">
+                    <div class="service-icon">🔄</div>
+                    <div>S3 Cross-Region<br/>Replication</div>
+                </div>
+                <div class="service-box backup">
+                    <div class="service-icon">📸</div>
+                    <div>Redshift<br/>Snapshots</div>
+                </div>
+                <div class="service-box backup">
+                    <div class="service-icon">⏰</div>
+                    <div>Point-in-Time<br/>Recovery</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DevOps Layer -->
+        <div class="layer devops-layer">
+            <div class="layer-title">🚀 DevOps & CI/CD</div>
+            <div class="services-grid">
+                <div class="service-box devops">
+                    <div class="service-icon">🐙</div>
+                    <div>GitHub<br/>Actions</div>
+                </div>
+                <div class="service-box devops">
+                    <div class="service-icon">🏗️</div>
+                    <div>Terraform<br/>IaC</div>
+                </div>
+                <div class="service-box devops">
+                    <div class="service-icon">📋</div>
+                    <div>Infrastructure<br/>as Code</div>
+                </div>
+                <div class="service-box devops">
+                    <div class="service-icon">🔄</div>
+                    <div>CI/CD<br/>Pipelines</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Flow -->
+        <div class="data-flow">
+            📄 Data Sources 
+            <span class="arrow">→</span>
+            🪣 S3 Storage 
+            <span class="arrow">→</span>
+            ⚙️ Glue ETL 
+            <span class="arrow">→</span>
+            🏢 Redshift 
+            <span class="arrow">→</span>
+            📊 Analytics
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-title">🎯 Service Categories</div>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color storage"></div>
+                    <span>Storage & Processing</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color analytics"></div>
+                    <span>Analytics & Data Warehouse</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color security"></div>
+                    <span>Security & Compliance</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color monitoring"></div>
+                    <span>Monitoring & Observability</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color backup"></div>
+                    <span>Backup & Disaster Recovery</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color devops"></div>
+                    <span>DevOps & CI/CD</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Architecture Summary -->
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3 style="color: #232F3E; margin-bottom: 15px;">🏆 Architecture Highlights</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <div>
+                    <strong>📊 Data Processing:</strong><br/>
+                    • 20+ AWS services integrated<br/>
+                    • Dual orchestration methods<br/>
+                    • Automated ETL pipelines
+                </div>
+                <div>
+                    <strong>🔒 Enterprise Security:</strong><br/>
+                    • End-to-end encryption<br/>
+                    • Compliance monitoring<br/>
+                    • Zero-trust architecture
+                </div>
+                <div>
+                    <strong>📈 Scalability:</strong><br/>
+                    • Auto-scaling infrastructure<br/>
+                    • Multi-AZ deployment<br/>
+                    • Performance optimization
+                </div>
+                <div>
+                    <strong>🚀 DevOps Excellence:</strong><br/>
+                    • Infrastructure as Code<br/>
+                    • CI/CD automation<br/>
+                    • Comprehensive monitoring
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Print functionality
+        function printDiagram() {
+            window.print();
+        }
+        
+        // Add print button
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.architecture-container');
+            const printBtn = document.createElement('button');
+            printBtn.textContent = '🖨️ Print/Save as PDF';
+            printBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background: #FF9900;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                z-index: 1000;
+            `;
+            printBtn.onclick = printDiagram;
+            document.body.appendChild(printBtn);
+        });
+    </script>
+</body>
+</html>
