@@ -47,10 +47,11 @@ graph TB
 
     %% Analytics & BI Layer
     subgraph "Business Intelligence & Analytics"
-        QuickSight[📊 Amazon QuickSight<br/>Dashboards & Reports]
-        Tableau[📈 Tableau<br/>Advanced Analytics]
-        PowerBI[📉 Power BI<br/>Business Dashboards]
-        CustomApps[💻 Custom Applications<br/>APIs & Web Apps]
+        QuickSight[📊 Amazon QuickSight<br/>4 Production Dashboards<br/>Real-time Analytics]
+        ExecutiveDash[🎯 Executive Dashboard<br/>KPIs & Strategic Insights]
+        CustomerDash[👥 Customer Analytics<br/>360° View & Segmentation]
+        ProductDash[🛍️ Product Performance<br/>Sales & Profitability]
+        OperationalDash[⚙️ Operational Dashboard<br/>ETL & System Monitoring]
     end
 
     %% Orchestration & Automation
@@ -121,9 +122,10 @@ graph TB
     
     %% Analytics Connections
     Redshift --> QuickSight
-    Redshift --> Tableau
-    Redshift --> PowerBI
-    Redshift --> CustomApps
+    QuickSight --> ExecutiveDash
+    QuickSight --> CustomerDash
+    QuickSight --> ProductDash
+    QuickSight --> OperationalDash
     S3Processed --> RedshiftSpectrum
     RedshiftSpectrum --> Redshift
     
@@ -204,10 +206,14 @@ graph TB
 - **Redshift Spectrum** - Query data directly in S3
 
 ### **5. Business Intelligence & Analytics Layer**
-- **Amazon QuickSight** - Native AWS dashboards
-- **Tableau** - Advanced analytics
-- **Power BI** - Business dashboards
-- **Custom Applications** - APIs and web applications
+- **Amazon QuickSight** - 4 production-ready dashboards with real-time data
+  - **Executive Dashboard** - Strategic KPIs, revenue trends, business insights
+  - **Customer Analytics** - 360° customer view, RFM analysis, churn prediction
+  - **Product Performance** - Sales rankings, profitability, category analysis
+  - **Operational Dashboard** - ETL monitoring, system health, data quality
+- **Direct Query** - Real-time data access without SPICE costs
+- **Interactive Features** - Filters, drill-down, export capabilities
+- **Mobile Responsive** - Professional dashboards for all devices
 
 ### **6. Orchestration & Automation Layer**
 - **EventBridge** - Scheduled and event-driven triggers
